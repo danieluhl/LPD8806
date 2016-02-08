@@ -1,0 +1,61 @@
+pixel:
+r, g, b // current (derrived, not stored)
+or, og, ob // originals
+rInterval, gInterval, bInterval // step intervals (float)
+states[]
+state // index of current state
+t // current tick
+
+
+states:
+r, g, b // final state
+t // # ms for transition
+
+
+
+// state loader
+void loadStates() {
+
+}
+
+
+
+
+void runStates() {
+  // check if we're done by checking if all pixels are done
+  while(1){
+    foreach pixel {
+      if(pixel.state < sizeof(states)) {
+        // bail, we're done
+        return;
+      }
+    }
+
+    foreach pixel {
+      // check if this pixel is done
+      if(pixel.state < sizeof(states)) {
+        if (pixel.t >= states[pixel.state].t) {
+          loadNextState()
+        }
+        tick()
+      }
+    }
+  }
+}
+
+loadNextState() {
+  pixel.state++;
+  pixel.t = 0;
+  rInterval = (pixel.r - states[state].r) / states.t;
+  gInterval = (pixel.g - states[state].g) / states.t;
+  bInterval = (pixel.b - states[state].b) / states.t;
+}
+
+void tick() {
+  pixel.t++;
+  pixel.r = pixel.or + ceil(pixel.rInterval * pixel.t);
+  pixel.g = pixel.og + ceil(pixel.gInterval * pixel.t);
+  pixel.b = pixel.ob + ceil(pixel.bInterval * pixel.t);
+}
+
+
